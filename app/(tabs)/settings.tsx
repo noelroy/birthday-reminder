@@ -1,26 +1,53 @@
+import { ThemedIcon } from "@/components/ThemedIcon";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { StyleSheet } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { readContacts } from "@/lib/dataHelpers";
+import { useAppStore } from "@/lib/store";
+import { Pressable, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
+  const setContacts = useAppStore((s) => s.setContacts);
+
+  const settingsData: {
+    title: string;
+    data: string[];
+  }[] = [
+      {
+        title: 'About',
+        data: ['aboutMe', 'spaceAPI', 'theme'],
+      },
+      {
+        title: 'Feedback and Help',
+        data: ['help', 'review'],
+      },
+    ];
+
+
+  const refreshContacts = async () => {
+    try {
+      const contacts = await readContacts()
+      setContacts(contacts);
+    } catch (error) {
+      console.error("Error refreshing contacts:", error);
+    }
+  };
 
   return (
     <SafeAreaView>
       <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>Debug tools ⚙️</ThemedText>
-      <ThemedText style={styles.subtitle}>This is a debug screen for testing purposes.</ThemedText>
+        <ThemedText type="subtitle">Debug Tools</ThemedText>
+        <Pressable style={styles.card} onPress={refreshContacts}>
+          <ThemedIcon name="refresh" size={24} />
+          <ThemedText>Refresh contacts</ThemedText>
+        </Pressable>
+      </ThemedView>
 
-      {/* <Pressable style={styles.signOutBtn} onPress={signOut}>
-        <ThemedText style={styles.signOutText}>Sign Out</ThemedText>
-      </Pressable> */}
-    </ThemedView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, justifyContent: "flex-start" },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
-  subtitle: { fontSize: 16, color: "white", marginBottom: 30 }
+  container: { padding: 10 },
+  card: { flexDirection: "row", alignItems: "center", marginVertical: 10, padding: 10, gap: 10 },
 });

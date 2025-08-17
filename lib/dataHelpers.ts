@@ -1,5 +1,5 @@
 import * as Contacts from 'expo-contacts';
-import * as Linking from 'expo-linking';
+// import * as Linking from 'expo-linking';
 
 /**
  * Check if a contact has birthday today
@@ -60,8 +60,8 @@ export const getUpcomingBirthdays = (contacts: Contacts.Contact[]): BirthdayWith
         });
         return data;
       }
-      else if (canAskAgain) {
-        Linking.openSettings()
-      }
+      // else if (canAskAgain) {
+      //   Linking.openSettings()
+      // }
       return [];
   }

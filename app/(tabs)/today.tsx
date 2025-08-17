@@ -3,12 +3,11 @@ import { ThemedView } from "@/components/ThemedView";
 import { getTodaysBirthdays } from "@/lib/dataHelpers";
 import { useAppStore } from "@/lib/store";
 import { FlatList, Image, StyleSheet } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TodayScreen() {
   const contacts = useAppStore((s) => s.contacts);
   const todays = getTodaysBirthdays(contacts);
-  const insets = useSafeAreaInsets();
 
 
   if (todays.length === 0) {
