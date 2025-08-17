@@ -1,35 +1,40 @@
-import { Contact } from "@/types/people_types";
+import * as Contacts from 'expo-contacts';
+import * as Linking from 'expo-linking';
 
 /**
  * Check if a contact has birthday today
  */
-export const isTodayBirthday = (contact: Contact): boolean => {
-  if (!contact.birthday || contact.birthday === "N/A") return false;
+export const isTodayBirthday = (contact: Contacts.Contact): boolean => {
+  if (!contact.birthday) return false;
 
-  const [month, day] = contact.birthday.split("/").map(Number);
+  const {day, month} = contact.birthday;
   const today = new Date();
 
-  return today.getMonth() + 1 === month && today.getDate() === day;
+  return today.getMonth() === month && today.getDate() === day;
 };
 
 /**
  * Get today's birthdays
  */
-export const getTodaysBirthdays = (contacts: Contact[]): Contact[] => {
+export const getTodaysBirthdays = (contacts: Contacts.Contact[]): Contacts.Contact[] => {
   return contacts.filter(isTodayBirthday);
+};
+
+type BirthdayWithNext = Contacts.Contact & {
+  nextBirthday?: Date;
 };
 
 /**
  * Get upcoming birthdays sorted by next date
  */
-export const getUpcomingBirthdays = (contacts: Contact[]): Contact[] => {
+export const getUpcomingBirthdays = (contacts: Contacts.Contact[]): BirthdayWithNext[] => {
   const today = new Date();
 
   return contacts
-    .filter((c) => c.birthday !== "N/A")
+    .filter((c) => c.birthday)
     .map((c) => {
-      const [month, day] = c.birthday.split("/").map(Number);
-      let next = new Date(today.getFullYear(), month - 1, day);
+      const { month, day } = c.birthday;
+      let next = new Date(today.getFullYear(), month, day);
 
       // If this year's birthday already passed, set to next year
       if (next < today) {
@@ -43,3 +48,20 @@ export const getUpcomingBirthdays = (contacts: Contact[]): Contact[] => {
         (a.nextBirthday?.getTime() || 0) - (b.nextBirthday?.getTime() || 0)
     );
 };
+
+  export async function readContacts() {
+    const { status, canAskAgain, granted } = await Contacts.requestPermissionsAsync();
+      const permission = await Contacts.getPermissionsAsync();
+      console.log("Contacts permission:", permission);
+      console.log("Contacts permission status:", status);
+      if (granted) {
+        const { data } = await Contacts.getContactsAsync({
+          fields: [Contacts.Fields.Name, Contacts.Fields.Birthday, Contacts.Fields.Image],
+        });
+        return data;
+      }
+      else if (canAskAgain) {
+        Linking.openSettings()
+      }
+      return [];
+  }

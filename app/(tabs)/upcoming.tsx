@@ -2,34 +2,39 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { getUpcomingBirthdays } from "@/lib/dataHelpers";
 import { useAppStore } from "@/lib/store";
-import { FlatList, Image, StyleSheet, Text } from "react-native";
+import { FlatList, Image, StyleSheet } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 export default function UpcomingScreen() {
   const contacts = useAppStore((s) => s.contacts);
   const upcoming = getUpcomingBirthdays(contacts);
 
   if (upcoming.length === 0) {
-    return <Text style={styles.empty}>No upcoming birthdays 🎉</Text>;
+    return <ThemedView style={styles.emptyContainer}><ThemedText style={styles.empty}>No upcoming birthdays 🎉</ThemedText></ThemedView>;
   }
 
   return (
+    <SafeAreaView>
     <FlatList
       data={upcoming}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.name}
       renderItem={({ item }) => (
         <ThemedView style={styles.card}>
-          {item.photo && <Image source={{ uri: item.photo }} style={styles.avatar} />}
+          {item.image && <Image source={{ uri: item.image.uri }} style={styles.avatar} />}
           <ThemedView>
             <ThemedText style={styles.name}>{item.name}</ThemedText>
-            <ThemedText style={styles.birthday}>🎂 {item.birthday}</ThemedText>
+            <ThemedText style={styles.birthday}>🎂 {item.nextBirthday?.toLocaleDateString()}</ThemedText>
           </ThemedView>
         </ThemedView>
       )}
     />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   card: { flexDirection: "row", alignItems: "center", marginVertical: 10, padding: 10 },
   avatar: { width: 50, height: 50, borderRadius: 25, marginRight: 15 },
   name: { fontSize: 18, fontWeight: "bold" },

@@ -5,14 +5,12 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useAppStore } from '@/lib/store';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-  const user = useAppStore((s) => s.user);
 
   if (!loaded) {
     // Async font loading only occurs in development.
@@ -22,12 +20,8 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Protected guard={user !== null}>
+          <Stack.Screen name="index" />
           <Stack.Screen name="(tabs)" />
-        </Stack.Protected>
-        <Stack.Protected guard={user === null}>
-          <Stack.Screen name="sign-in" />
-        </Stack.Protected>
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
