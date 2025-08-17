@@ -3,7 +3,6 @@ import { ThemedView } from "@/components/ThemedView";
 import { getTodaysBirthdays } from "@/lib/dataHelpers";
 import { useAppStore } from "@/lib/store";
 import { FlatList, Image, StyleSheet } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TodayScreen() {
   const contacts = useAppStore((s) => s.contacts);
@@ -15,7 +14,6 @@ export default function TodayScreen() {
   }
 
   return (
-    <SafeAreaView>
     <FlatList
       data={todays}
       keyExtractor={(item) => item.name}
@@ -30,7 +28,6 @@ export default function TodayScreen() {
         
       )}
     />
-    </SafeAreaView>
   );
 }
 

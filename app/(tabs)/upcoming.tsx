@@ -3,7 +3,6 @@ import { ThemedView } from "@/components/ThemedView";
 import { getUpcomingBirthdays } from "@/lib/dataHelpers";
 import { useAppStore } from "@/lib/store";
 import { FlatList, Image, StyleSheet } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function UpcomingScreen() {
@@ -15,7 +14,6 @@ export default function UpcomingScreen() {
   }
 
   return (
-    <SafeAreaView>
     <FlatList
       data={upcoming}
       keyExtractor={(item) => item.name}
@@ -29,7 +27,6 @@ export default function UpcomingScreen() {
         </ThemedView>
       )}
     />
-    </SafeAreaView>
   );
 }
 

@@ -28,15 +28,16 @@
     "plugins": [
       "expo-router",
       [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps.622312246982-dc666elgfgmkhp72q3v8b79d9rt0vhvn"
-        }
-      ],
-      [
         "expo-contacts",
         {
           "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "defaultChannel": "birthdays"
         }
       ],
       [
@@ -47,7 +48,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-background-task"
     ],
     "experiments": {
       "typedRoutes": true

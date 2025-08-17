@@ -2,9 +2,9 @@ import { ThemedIcon } from "@/components/ThemedIcon";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { readContacts } from "@/lib/dataHelpers";
+import { sendBirthdayNotification } from "@/lib/notificationHelper";
 import { useAppStore } from "@/lib/store";
-import { Pressable, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Pressable, StyleSheet, ToastAndroid } from "react-native";
 
 export default function SettingsScreen() {
   const setContacts = useAppStore((s) => s.setContacts);
@@ -27,14 +27,27 @@ export default function SettingsScreen() {
 
   const refreshContacts = async () => {
     try {
-      await readContacts()
+      const contacts = await readContacts();
+      if (contacts.length > 0) {
+        ToastAndroid.show('Contacts refreshed!', ToastAndroid.SHORT);
+      }
     } catch (error) {
       console.error("Error refreshing contacts:", error);
+      ToastAndroid.show('Error refreshing contacts!', ToastAndroid.SHORT);
+    }
+  };
+
+  const sendNotification = async() => {
+    try{
+      await sendBirthdayNotification(["Alice", "Bob"]);
+      ToastAndroid.show('Notification sent!', ToastAndroid.SHORT);
+    } catch (error) {
+      console.error("Error sending notification:", error);
+      ToastAndroid.show('Error sending notification!', ToastAndroid.SHORT);
     }
   };
 
   return (
-    <SafeAreaView>
       <ThemedView style={styles.container}>
         <ThemedText type="subtitle">Debug Tools</ThemedText>
         <Pressable style={styles.card} onPress={refreshContacts}>
@@ -46,9 +59,14 @@ export default function SettingsScreen() {
             )}
           </ThemedView>
         </Pressable>
+        <Pressable style={styles.card} onPress={sendNotification}>
+          <ThemedIcon name="chatbox-outline" size={24} />
+          <ThemedView>
+            <ThemedText>Test Notification</ThemedText>
+          </ThemedView>
+        </Pressable>
       </ThemedView>
 
-    </SafeAreaView>
   );
 }
 
