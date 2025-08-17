@@ -2,7 +2,6 @@ import { configureGoogleSignIn } from "@/lib/authHelpers";
 import { useAppStore } from "@/lib/store";
 import { Contact, PeopleAPIResponse } from "@/types/people_types";
 import { GoogleSignin, isSuccessResponse, User } from "@react-native-google-signin/google-signin";
-import { Redirect } from "expo-router";
 import { useEffect } from "react";
 import { Button, StyleSheet, View } from "react-native";
 
@@ -59,7 +58,7 @@ export default function SignInScreen() {
   };
 
   return (
-    user ? <Redirect href="/today" /> :
+    // user ? <Redirect href="/" /> :
     <View style={styles.container}>
       <Button title="Sign in with Google new" onPress={signIn} />
     </View>

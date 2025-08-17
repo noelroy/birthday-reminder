@@ -7,7 +7,7 @@ export default function MainLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        name="today"
+        name="index"
         options={{
           title: "Today",
           tabBarIcon: ({ color, size }) => (

@@ -2,7 +2,6 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { signOutFromGoogle } from "@/lib/authHelpers";
 import { useAppStore } from "@/lib/store";
-import { router } from "expo-router";
 import { Pressable, StyleSheet } from "react-native";
 
 export default function SettingsScreen() {
@@ -13,7 +12,6 @@ export default function SettingsScreen() {
     try {
       await signOutFromGoogle();
       resetStore();
-      router.replace("/");
     } catch (error) {
       console.error("Error signing out:", error);
     }
