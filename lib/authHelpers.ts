@@ -1,5 +1,12 @@
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
+export const signOutFromGoogle = async () => {
+  try {
+    await GoogleSignin.signOut();
+  } catch (e) {
+    console.warn("Error signing out from Google:", e);
+  }
+};
 
 export function configureGoogleSignIn() {
   // GoogleSignin.configure({

@@ -7,6 +7,7 @@ interface AppState {
   contacts: Contact[];
   setUser: (user: User | null) => void;
   setContacts: (contacts: Contact[]) => void;
+  signOut: () => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -14,4 +15,5 @@ export const useAppStore = create<AppState>((set) => ({
   contacts: [],
   setUser: (user) => set({ user }),
   setContacts: (contacts) => set({ contacts }),
+  signOut: () => set({ user: null, contacts: [] }),
 }));
