@@ -1,4 +1,5 @@
 import * as Contacts from 'expo-contacts';
+import { useAppStore } from './store';
 // import * as Linking from 'expo-linking';
 
 /**
@@ -7,7 +8,7 @@ import * as Contacts from 'expo-contacts';
 export const isTodayBirthday = (contact: Contacts.Contact): boolean => {
   if (!contact.birthday) return false;
 
-  const {day, month} = contact.birthday;
+  const { day, month } = contact.birthday;
   const today = new Date();
 
   return today.getMonth() === month && today.getDate() === day;
@@ -49,19 +50,28 @@ export const getUpcomingBirthdays = (contacts: Contacts.Contact[]): BirthdayWith
     );
 };
 
-  export async function readContacts() {
+export async function readContacts() {
+  try {
     const { status, canAskAgain, granted } = await Contacts.requestPermissionsAsync();
-      const permission = await Contacts.getPermissionsAsync();
-      console.log("Contacts permission:", permission);
-      console.log("Contacts permission status:", status);
-      if (granted) {
-        const { data } = await Contacts.getContactsAsync({
-          fields: [Contacts.Fields.Name, Contacts.Fields.Birthday, Contacts.Fields.Image],
-        });
-        return data;
-      }
-      // else if (canAskAgain) {
-      //   Linking.openSettings()
-      // }
-      return [];
+    const permission = await Contacts.getPermissionsAsync();
+    console.log("Contacts permission:", permission);
+    console.log("Contacts permission status:", status);
+    if (granted) {
+      const { data } = await Contacts.getContactsAsync({
+        fields: [Contacts.Fields.Name, Contacts.Fields.Birthday, Contacts.Fields.Image],
+      });
+      const now = new Date();
+      const formatted = now.toLocaleString();
+      const store = useAppStore.getState();
+      store.setContacts(data);
+      store.setLastSynced(formatted);
+      return data;
+    }
+    // else if (canAskAgain) {
+    //   Linking.openSettings()
+    // }
+  } catch (error) {
+    console.error("Error reading contacts:", error);
   }
+  return [];
+}

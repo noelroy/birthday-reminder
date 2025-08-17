@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
   const setContacts = useAppStore((s) => s.setContacts);
+  const lastSynced = useAppStore((s) => s.lastSynced);
 
   const settingsData: {
     title: string;
@@ -26,8 +27,7 @@ export default function SettingsScreen() {
 
   const refreshContacts = async () => {
     try {
-      const contacts = await readContacts()
-      setContacts(contacts);
+      await readContacts()
     } catch (error) {
       console.error("Error refreshing contacts:", error);
     }
@@ -39,7 +39,12 @@ export default function SettingsScreen() {
         <ThemedText type="subtitle">Debug Tools</ThemedText>
         <Pressable style={styles.card} onPress={refreshContacts}>
           <ThemedIcon name="refresh" size={24} />
-          <ThemedText>Refresh contacts</ThemedText>
+          <ThemedView>
+            <ThemedText>Refresh contacts</ThemedText>
+            {lastSynced && (
+              <ThemedText style={styles.lastSynced}>Last synced: {lastSynced}</ThemedText>
+            )}
+          </ThemedView>
         </Pressable>
       </ThemedView>
 
@@ -50,4 +55,5 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: { padding: 10 },
   card: { flexDirection: "row", alignItems: "center", marginVertical: 10, padding: 10, gap: 10 },
+  lastSynced: { fontSize: 12, color: "gray" },
 });
