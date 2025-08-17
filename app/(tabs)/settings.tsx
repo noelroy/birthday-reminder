@@ -13,7 +13,7 @@ export default function SettingsScreen() {
     try {
       await signOutFromGoogle();
       resetStore();
-      router.replace("/auth/sign-in");
+      router.replace("/");
     } catch (error) {
       console.error("Error signing out:", error);
     }

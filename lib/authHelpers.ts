@@ -13,5 +13,7 @@ export function configureGoogleSignIn() {
   //   webClientId: process.env.EXPO_PUBLIC_CLIENT_ID, // from Google Cloud
   //   offlineAccess: true,  // if you want refresh tokens
   // });
-  GoogleSignin.configure();
+  GoogleSignin.configure({
+    scopes: ["https://www.googleapis.com/auth/contacts.readonly"],
+  });
 }
