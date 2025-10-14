@@ -1,14 +1,17 @@
 import * as BackgroundTask from "expo-background-task";
 import * as TaskManager from "expo-task-manager";
-import { getTodaysBirthdays, readContacts } from "./dataHelpers";
+import { getContacts, getTodaysBirthdays } from "./dataHelpers";
 import { sendBirthdayNotification } from "./notificationHelper";
 
-const TASK_NAME = "NOTIFY_BIRTHDAY_DAILY";
+export const TASK_NAME = "NOTIFY_BIRTHDAY_DAILY";
+
+export const TASK_INTERVAL = 6 * 60; // 6 hours
 
 TaskManager.defineTask(TASK_NAME, async () => {
   try {
-    const contacts = await readContacts();
-    const todays = getTodaysBirthdays(contacts);
+    console.log("Running background task to notify birthdays...");
+    const data = await getContacts();
+    const todays = getTodaysBirthdays(data);
     if (todays.length <= 0) {
       console.log("No birthdays today, skipping notification");
       return BackgroundTask.BackgroundTaskResult.Success;
@@ -23,12 +26,14 @@ TaskManager.defineTask(TASK_NAME, async () => {
   }
 });
 
-export const registerBackgroundTask = async () => {
+export const registerBackgroundTaskAsync = async () => {
   try {
+    const isTaskDefined = TaskManager.isTaskDefined(TASK_NAME);
+    console.log("Is task defined:", isTaskDefined ? "Yes" : "No");
     const isRegistered = await TaskManager.isTaskRegisteredAsync(TASK_NAME);
     if (!isRegistered) {
       await BackgroundTask.registerTaskAsync(TASK_NAME, {
-        minimumInterval: 60 * 60 * 24, // 24 hours
+        minimumInterval: TASK_INTERVAL,
       });
     }
     console.log("📌 Background task registered");
@@ -36,3 +41,7 @@ export const registerBackgroundTask = async () => {
     console.error("Failed to register background task:", error);
   }
 };
+
+export async function unregisterBackgroundTaskAsync() {
+  return BackgroundTask.unregisterTaskAsync(TASK_NAME);
+}

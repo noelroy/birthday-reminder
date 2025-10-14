@@ -1,11 +1,11 @@
 import * as Contacts from 'expo-contacts';
+import * as Linking from 'expo-linking';
 import { useAppStore } from './store';
-// import * as Linking from 'expo-linking';
 
 /**
  * Check if a contact has birthday today
  */
-export const isTodayBirthday = (contact: Contacts.Contact): boolean => {
+const isTodayBirthday = (contact: Contacts.Contact): boolean => {
   if (!contact.birthday) return false;
 
   const { day, month } = contact.birthday;
@@ -57,21 +57,32 @@ export async function readContacts() {
     console.log("Contacts permission:", permission);
     console.log("Contacts permission status:", status);
     if (granted) {
-      const { data } = await Contacts.getContactsAsync({
-        fields: [Contacts.Fields.Name, Contacts.Fields.Birthday, Contacts.Fields.Image],
-      });
-      const now = new Date();
-      const formatted = now.toLocaleString();
-      const store = useAppStore.getState();
-      store.setContacts(data);
-      store.setLastSynced(formatted);
-      return data;
+      return await getContacts();
     }
-    // else if (canAskAgain) {
-    //   Linking.openSettings()
-    // }
+    else if (canAskAgain) {
+      Linking.openSettings()
+    }
   } catch (error) {
     console.error("Error reading contacts:", error);
   }
   return [];
 }
+
+export async function getContacts(): Promise<Contacts.Contact[]> {
+  try {
+    console.log("Fetching contacts...");
+    const { data } =  await Contacts.getContactsAsync({
+      fields: [Contacts.Fields.Name, Contacts.Fields.Birthday, Contacts.Fields.Image],
+    });
+    const now = new Date();
+      const formatted = now.toLocaleString();
+      const store = useAppStore.getState();
+      store.setContacts(data);
+      store.setLastSynced(formatted);
+      return data;
+  } catch (error) {
+    console.error("Error fetching contacts:", error);
+    return [];
+  }
+}
+
