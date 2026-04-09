@@ -1,50 +1,143 @@
-# Welcome to your Expo app 👋
+# Birthday Reminder
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Birthday Reminder is a React Native + Expo app that reads birthdays from your phone contacts and helps you keep track of:
 
-## Get started
+- birthdays happening today
+- upcoming birthdays sorted by nearest date
+- local birthday notifications
 
-1. Install dependencies
+The app uses only on-device contact data and local notifications (no backend required).
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+- Contact sync from phone contacts (`expo-contacts`)
+- "Today" tab for birthdays happening today
+- "Upcoming" tab for future birthdays sorted by date
+- Local notification setup (`expo-notifications`)
+- Periodic background worker registration (`expo-background-task`)
+- Debug tools screen with actions for refreshing contacts, sending test notifications, manually triggering the background worker, and checking task registration status
 
-   ```bash
-   npx expo start
-   ```
+## Tech Stack
 
-In the output, you'll find options to open the app in a
+- Expo Router (file-based navigation)
+- React Native
+- Zustand (lightweight local state)
+- Expo Contacts
+- Expo Notifications
+- Expo Background Task + Task Manager
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Project Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- `app/(tabs)/today.tsx`: Birthdays today view
+- `app/(tabs)/upcoming.tsx`: Upcoming birthdays view
+- `app/(tabs)/settings.tsx`: Debug actions and task status
+- `app/index.tsx`: App startup flow (permissions, setup, task registration)
+- `lib/dataHelpers.ts`: Contacts permission + contact data processing
+- `lib/notificationHelper.ts`: Notification permission + scheduling
+- `lib/backgroundTaskHelper.ts`: Background task definition and registration
+- `lib/store.ts`: Global app state (`contacts`, `lastSynced`)
 
-## Get a fresh project
+## Getting Started
 
-When you're ready, run:
+### Prerequisites
+
+- Node.js 18+ recommended
+- npm
+- Android Studio / Xcode (depending on target platform)
+- Physical device recommended for notification testing
+
+### Install
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Run
 
-## Learn more
+```bash
+npm run start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Common platform commands:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm run android
+npm run ios
+npm run web
+```
 
-## Join the community
+### Lint
 
-Join our community of developers creating universal apps.
+```bash
+npm run lint
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## How To Use The App
+
+1. Launch the app.
+2. Grant Contacts permission when prompted.
+3. Grant Notifications permission when prompted.
+4. The app redirects to the Today tab once initialization completes.
+
+### Today Tab
+
+- Shows contacts whose birthday matches today.
+- If no birthdays exist for today, an empty state message is shown.
+
+### Upcoming Tab
+
+- Shows contacts with birthdays sorted by next upcoming date.
+- Displays the computed next birthday date.
+
+### Debug Tab
+
+- `Refresh contacts`: re-fetches contacts and updates `lastSynced`.
+- `Test Notification`: sends an immediate local test notification.
+- `Test Background Task`: manually triggers background worker (for dev/test).
+
+## Permissions
+
+The app requests:
+
+- Contacts permission: needed to read birthdays from your contacts.
+- Notifications permission: needed to show local reminders.
+
+On Android, the app also sets up a `birthdays` notification channel.
+
+## Background Notification Notes
+
+The app registers a periodic background task with a minimum interval (currently every 6 hours). On modern Android/iOS versions, background execution is best-effort and OS-managed.
+
+Important implications:
+
+- Background runs are not exact timers.
+- Device battery optimization and app standby can delay execution.
+- Force-stopping the app usually prevents background work until user opens the app again.
+
+## Troubleshooting
+
+### App stuck on Loading screen
+
+- Ensure Contacts permission is granted.
+- If permission was denied permanently, open app settings and re-enable Contacts.
+- Check device logs for permission or background task errors.
+
+### No notifications
+
+- Ensure Notifications permission is granted.
+- Test with the `Test Notification` button in Debug tab.
+- Disable battery optimization for the app on Android while testing background behavior.
+
+### No birthdays displayed
+
+- Verify contact entries include birthday fields.
+- Use `Refresh contacts` in Debug tab.
+
+## Scripts
+
+- `npm run start`: Start Expo dev server
+- `npm run android`: Run Android build
+- `npm run ios`: Run iOS build
+- `npm run web`: Run web target
+- `npm run lint`: Run lint checks
+- `npm run reset-project`: Reset starter scaffolding

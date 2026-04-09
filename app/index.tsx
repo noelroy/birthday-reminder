@@ -12,12 +12,22 @@ export default function SignInScreen() {
 
   useEffect(() => {
     (async () => {
-      await readContacts();
-      await setupNotifications()
-      await unregisterBackgroundTaskAsync();
-      await registerBackgroundTaskAsync();
-      if (__DEV__) console.log('Running in dev mode')
-      setLoading(false);
+      try {
+        await readContacts();
+        await setupNotifications();
+        try {
+          await unregisterBackgroundTaskAsync();
+        } catch (error) {
+          console.log("Skipping task unregister:", error);
+        }
+        await registerBackgroundTaskAsync();
+        if (__DEV__) console.log('Running in dev mode');
+        console.log("Initialization complete, navigating to main screen");
+      } catch (error) {
+        console.error("Error during app initialization:", error);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
 

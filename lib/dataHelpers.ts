@@ -2,6 +2,19 @@ import * as Contacts from 'expo-contacts';
 import * as Linking from 'expo-linking';
 import { useAppStore } from './store';
 
+const CONTACT_PERMISSION_TIMEOUT_MS = 8000;
+
+async function requestContactsPermissionWithTimeout() {
+  return Promise.race([
+    Contacts.requestPermissionsAsync(),
+    new Promise<never>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error('Timed out while requesting contacts permission'));
+      }, CONTACT_PERMISSION_TIMEOUT_MS);
+    }),
+  ]);
+}
+
 /**
  * Check if a contact has birthday today
  */
@@ -52,15 +65,24 @@ export const getUpcomingBirthdays = (contacts: Contacts.Contact[]): BirthdayWith
 
 export async function readContacts() {
   try {
-    const { status, canAskAgain, granted } = await Contacts.requestPermissionsAsync();
+    const existing = await Contacts.getPermissionsAsync();
+    if (existing.granted) return getContacts();
+
+    if (!existing.canAskAgain) {
+      await Linking.openSettings();
+      return [];
+    }
+
+    const { status, canAskAgain, granted } = await requestContactsPermissionWithTimeout();
+    console.log("Contacts permission request result:", { status, canAskAgain, granted });
     const permission = await Contacts.getPermissionsAsync();
     console.log("Contacts permission:", permission);
     console.log("Contacts permission status:", status);
     if (granted) {
       return await getContacts();
     }
-    else if (canAskAgain) {
-      Linking.openSettings()
+    if (!canAskAgain) {
+      await Linking.openSettings();
     }
   } catch (error) {
     console.error("Error reading contacts:", error);
