@@ -41,7 +41,7 @@ The app uses only on-device contact data and local notifications (no backend req
 
 ### Prerequisites
 
-- Node.js 18+ recommended
+- Node.js
 - npm
 - Android Studio / Xcode (depending on target platform)
 - Physical device recommended for notification testing
@@ -64,6 +64,60 @@ Common platform commands:
 npm run android
 npm run ios
 npm run web
+```
+
+In case the dev server is inaccessible
+```bash
+npx expo start --tunnel -d -a
+```
+
+### Android Development With USB Debugging
+
+#### Quick Start: Build and Install with Expo (Simplest)
+
+```bash
+npx expo run:android
+```
+
+#### Manual APK Generation and Installation
+
+**Generate native code:**
+```bash
+npx expo prebuild --clean
+```
+
+**Build debug APK:**
+```bash
+cd android
+./gradlew assembleDebug
+cd ..
+```
+
+APK location: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+**Install via USB:**
+```bash
+adb devices
+adb install android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+#### Release APK
+
+Build release APK:
+```bash
+cd android
+./gradlew assembleRelease
+cd ..
+```
+
+APK location: `android/app/build/outputs/apk/release/app-release.apk`
+
+#### Useful ADB Commands
+
+```bash
+adb kill-server && adb start-server
+adb reverse tcp:8081 tcp:8081
+adb logcat | grep -i "reactnative\|expo\|birthday"
 ```
 
 ### Lint
