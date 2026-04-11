@@ -1,7 +1,7 @@
 import * as BackgroundTask from "expo-background-task";
 import * as TaskManager from "expo-task-manager";
-import { getContacts, getTodaysBirthdays } from "./dataHelpers";
-import { sendBirthdayNotification } from "./notificationHelper";
+import { getContacts } from "./dataHelpers";
+import { scheduleRollingBirthdayNotifications } from "./notificationHelper";
 
 export const TASK_NAME = "NOTIFY_BIRTHDAY_DAILY";
 
@@ -9,16 +9,10 @@ export const TASK_INTERVAL = 6 * 60; // 6 hours
 
 TaskManager.defineTask(TASK_NAME, async () => {
   try {
-    console.log("Running background task to notify birthdays...");
+    console.log("Running background task to refresh birthday schedule...");
     const data = await getContacts();
-    const todays = getTodaysBirthdays(data);
-    if (todays.length <= 0) {
-      console.log("No birthdays today, skipping notification");
-      return BackgroundTask.BackgroundTaskResult.Success;
-    }
-    const names = todays.map((contact) => contact.name);
-    await sendBirthdayNotification(names);
-    console.log("Notified birthdays for:", names.join(", "));
+    const scheduled = await scheduleRollingBirthdayNotifications(data, 30);
+    console.log(`Refreshed rolling birthday schedule: ${scheduled} day(s) queued`);
     return BackgroundTask.BackgroundTaskResult.Success;
   } catch (error) {
     console.error("Error occurred while notifying birthdays:", error);

@@ -4,7 +4,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { useAppColors } from "@/hooks/useAppColors";
 import { TASK_NAME as BACKGROUND_TASK_IDENTIFIER } from "@/lib/backgroundTaskHelper";
 import { getContacts } from "@/lib/dataHelpers";
-import { sendBirthdayNotification } from "@/lib/notificationHelper";
+import { getNotificationScheduleStatus, NotificationScheduleStatus, scheduleRollingBirthdayNotifications, sendBirthdayNotification } from "@/lib/notificationHelper";
 import { ThemePreference, useAppStore } from "@/lib/store";
 import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from "expo-task-manager";
@@ -20,16 +20,34 @@ export default function SettingsScreen() {
 
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [status, setStatus] = useState<BackgroundTask.BackgroundTaskStatus | null>(null);
+  const [notificationStatus, setNotificationStatus] = useState<NotificationScheduleStatus | null>(null);
 
   useEffect(() => {
-    updateAsync();
+    refreshStatusCards();
   }, []);
 
-  const updateAsync = async () => {
-    const status = await BackgroundTask.getStatusAsync();
-    setStatus(status);
-    const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_IDENTIFIER);
-    setIsRegistered(isRegistered);
+  const refreshStatusCards = async () => {
+    const [taskStatus, taskRegistered, notificationScheduleStatus] = await Promise.all([
+      BackgroundTask.getStatusAsync(),
+      TaskManager.isTaskRegisteredAsync(BACKGROUND_TASK_IDENTIFIER),
+      getNotificationScheduleStatus(),
+    ]);
+
+    setStatus(taskStatus);
+    setIsRegistered(taskRegistered);
+    setNotificationStatus(notificationScheduleStatus);
+  };
+
+  const resyncNotificationSchedule = async (sourceContacts?: Awaited<ReturnType<typeof getContacts>>) => {
+    try {
+      const contacts = sourceContacts ?? await getContacts();
+      const count = await scheduleRollingBirthdayNotifications(contacts, 30);
+      await refreshStatusCards();
+      ToastAndroid.show(`Scheduled ${count} reminder day(s)`, ToastAndroid.SHORT);
+    } catch (error) {
+      console.error("Error syncing notification schedule:", error);
+      ToastAndroid.show('Error syncing notification schedule!', ToastAndroid.SHORT);
+    }
   };
 
   const refreshContacts = async () => {
@@ -38,6 +56,7 @@ export default function SettingsScreen() {
       if (contacts.length > 0) {
         ToastAndroid.show('Contacts refreshed!', ToastAndroid.SHORT);
       }
+      await resyncNotificationSchedule(contacts);
     } catch (error) {
       console.error("Error refreshing contacts:", error);
       ToastAndroid.show('Error refreshing contacts!', ToastAndroid.SHORT);
@@ -58,6 +77,7 @@ export default function SettingsScreen() {
     const result = await BackgroundTask.triggerTaskWorkerForTestingAsync();
     console.log("Background task triggered:", result);
     ToastAndroid.show('Background task triggered!', ToastAndroid.SHORT);
+    await refreshStatusCards();
   };
 
   const themeOptions: Array<{ label: string; value: ThemePreference }> = [
@@ -111,6 +131,25 @@ export default function SettingsScreen() {
             <ThemedText>Test Background Task</ThemedText>
             <ThemedText type="muted" style={styles.lastSynced}>
               {status === BackgroundTask.BackgroundTaskStatus.Restricted ? 'Unavailable' : 'Available'}: {isRegistered ? 'Registered' : 'Not registered'}
+            </ThemedText>
+          </ThemedView>
+        </Pressable>
+
+        <Pressable style={styles.card} onPress={() => resyncNotificationSchedule()}>
+          <ThemedIcon name="notifications-outline" size={24} />
+          <ThemedView>
+            <ThemedText>Notification Status</ThemedText>
+            <ThemedText type="muted" style={styles.lastSynced}>
+              Permission: {notificationStatus?.permissionStatus ?? "unknown"}
+            </ThemedText>
+            <ThemedText type="muted" style={styles.lastSynced}>
+              Scheduled (30d): {notificationStatus?.birthdayScheduledCount ?? 0}
+            </ThemedText>
+            <ThemedText type="muted" style={styles.lastSynced}>
+              Total scheduled: {notificationStatus?.totalScheduledCount ?? 0}
+            </ThemedText>
+            <ThemedText type="muted" style={styles.lastSynced}>
+              Tap to resync schedule
             </ThemedText>
           </ThemedView>
         </Pressable>

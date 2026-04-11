@@ -2,7 +2,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { registerBackgroundTaskAsync, unregisterBackgroundTaskAsync } from "@/lib/backgroundTaskHelper";
 import { readContacts } from "@/lib/dataHelpers";
-import { setupNotifications } from "@/lib/notificationHelper";
+import { scheduleRollingBirthdayNotifications, setupNotifications } from "@/lib/notificationHelper";
 import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
@@ -13,8 +13,10 @@ export default function SignInScreen() {
   useEffect(() => {
     (async () => {
       try {
-        await readContacts();
+        const contacts = await readContacts();
         await setupNotifications();
+        const scheduledCount = await scheduleRollingBirthdayNotifications(contacts, 30);
+        console.log(`Scheduled ${scheduledCount} birthday reminder day(s) for next 30 days`);
         try {
           await unregisterBackgroundTaskAsync();
         } catch (error) {
