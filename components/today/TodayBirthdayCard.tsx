@@ -19,15 +19,15 @@ export default function TodayBirthdayCard({ item }: TodayBirthdayCardProps) {
 
   return (
     <ThemedView style={styles.card}>
-      <ThemedView style={{ flexDirection: "row", alignItems: "center" }}>
+      <ThemedView style={styles.row}>
         {item.image?.uri ?
           (<Image source={{ uri: item.image.uri }} style={styles.avatar} />)
           :
           (<ThemedIcon name="person-circle" size={50} style={styles.avatar} />)
         }
-        <ThemedView style={styles.cardContent}>
-          <ThemedText style={styles.name}>{item.name}</ThemedText>
-          <ThemedText style={styles.birthday}>🎂 Today</ThemedText>
+        <ThemedView style={styles.info}>
+          <ThemedText type="defaultSemiBold">{item.name}</ThemedText>
+          <ThemedText type="muted">🎂 Today</ThemedText>
         </ThemedView>
       </ThemedView>
 
@@ -37,9 +37,14 @@ export default function TodayBirthdayCard({ item }: TodayBirthdayCardProps) {
 }
 
 const styles = StyleSheet.create({
-  card: { flexDirection: "column", marginVertical: 8, padding: 12, borderRadius: 8, marginHorizontal: 10 },
-  cardContent: { flex: 1, marginLeft: 12 },
+  card: { 
+    flexDirection: "column",
+    marginBottom: 10,
+    padding: 12,
+    borderRadius: 12,
+    gap:10 
+  },
+  row: { flexDirection: "row", alignItems: "center" },
+  info: { flex: 1, marginLeft: 12 },
   avatar: { width: 50, height: 50, borderRadius: 25 },
-  name: { fontSize: 18, fontWeight: "bold" },
-  birthday: { fontSize: 14, marginTop: 4 },
 });

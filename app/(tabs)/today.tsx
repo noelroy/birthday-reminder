@@ -17,6 +17,7 @@ export default function TodayScreen() {
     <FlatList
       data={todays}
       keyExtractor={(item) => item.name}
+      contentContainerStyle={styles.listContent}
       renderItem={({ item }) => <TodayBirthdayCard item={item} />}
     />
   );
@@ -24,5 +25,6 @@ export default function TodayScreen() {
 
 const styles = StyleSheet.create({
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  listContent: { padding: 10 },
   empty: { textAlign: "center", fontSize: 16, marginTop: 30 },
 });

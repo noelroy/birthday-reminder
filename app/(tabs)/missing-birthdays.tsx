@@ -45,7 +45,7 @@ export default function MissingBirthdaysScreen() {
       renderItem={({ item }) => (
         <ThemedView style={[styles.card, { borderColor: colors.border }]}>
           <ThemedView style={styles.row}>
-            <ThemedIcon name="person-circle" size={42} />
+            <ThemedIcon name="person-circle" size={50} />
             <ThemedView style={styles.info}>
               <ThemedText type="defaultSemiBold">{item.name || "Unnamed contact"}</ThemedText>
               <ThemedText type="muted">Birthday missing</ThemedText>
