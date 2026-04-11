@@ -189,7 +189,7 @@ Important implications:
 
 ## Future TODOs
 
-### Reliability First
+### Reliability
 
 - Pre-scheduled yearly reminders per contact birthday instead of only background polling.
 - Notification deduping so users never get duplicate reminders.
@@ -200,10 +200,6 @@ Important implications:
 
 - Reminder time picker (for example, 8:00 AM local time).
 - Reminder lead-time options: same day, 1 day before, 1 week before.
-
-### Data and Contacts
-
-- Detect contacts missing birthdays and show "Improve reminders" suggestions.
 
 ### Security and Release Readiness
 
