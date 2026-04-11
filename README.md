@@ -187,6 +187,34 @@ Important implications:
 - Verify contact entries include birthday fields.
 - Use `Refresh contacts` in Debug tab.
 
+## Future TODOs
+
+### Reliability First
+
+- Pre-scheduled yearly reminders per contact birthday instead of only background polling.
+- Notification deduping so users never get duplicate reminders.
+- Missed reminder recovery: if the app was off at trigger time, show a "missed birthdays today" notification on next launch.
+- Add a notification health status card in [app/(tabs)/settings.tsx](app/(tabs)/settings.tsx) with permissions, scheduled count, last sync, and task status.
+
+### User Experience
+
+- Search and filter in Today and Upcoming tabs (by month, by name).
+- Group upcoming birthdays by month sections.
+- Add days-left badges in [app/(tabs)/upcoming.tsx](app/(tabs)/upcoming.tsx).
+
+### Customization
+
+- Reminder time picker (for example, 8:00 AM local time).
+- Reminder lead-time options: same day, 1 day before, 1 week before.
+
+### Data and Contacts
+
+- Detect contacts missing birthdays and show "Improve reminders" suggestions.
+
+### Security and Release Readiness
+
+- Add analytics events for key flows: permission granted, reminder sent, reminder tapped.
+
 ## Scripts
 
 - `npm run start`: Start Expo dev server
