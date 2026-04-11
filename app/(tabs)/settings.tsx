@@ -1,19 +1,22 @@
 import { ThemedIcon } from "@/components/ThemedIcon";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { useAppColors } from "@/hooks/useAppColors";
 import { TASK_NAME as BACKGROUND_TASK_IDENTIFIER } from "@/lib/backgroundTaskHelper";
 import { getContacts } from "@/lib/dataHelpers";
 import { sendBirthdayNotification } from "@/lib/notificationHelper";
 import { ThemePreference, useAppStore } from "@/lib/store";
 import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from "expo-task-manager";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, ToastAndroid } from "react-native";
 
 export default function SettingsScreen() {
+  const colors = useAppColors();
   const lastSynced = useAppStore((s) => s.lastSynced);
   const themePreference = useAppStore((s) => s.themePreference);
   const setThemePreference = useAppStore((s) => s.setThemePreference);
+  const dynamicStyles = useMemo(() => createDynamicStyles(colors), [colors]);
 
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [status, setStatus] = useState<BackgroundTask.BackgroundTaskStatus | null>(null);
@@ -73,10 +76,10 @@ export default function SettingsScreen() {
               return (
                 <Pressable
                   key={option.value}
-                  style={[styles.themeChip, isActive && styles.themeChipActive]}
+                  style={[styles.themeChip, dynamicStyles.themeChip, isActive && dynamicStyles.themeChipActive]}
                   onPress={() => setThemePreference(option.value)}
                 >
-                  <ThemedText style={[styles.themeChipText, isActive && styles.themeChipTextActive]}>
+                  <ThemedText style={[styles.themeChipText, isActive && dynamicStyles.themeChipTextActive]}>
                     {option.label}
                   </ThemedText>
                 </Pressable>
@@ -90,7 +93,9 @@ export default function SettingsScreen() {
           <ThemedView>
             <ThemedText>Refresh contacts</ThemedText>
             {lastSynced && (
-              <ThemedText style={styles.lastSynced}>Last synced: {lastSynced}</ThemedText>
+              <ThemedText style={[styles.lastSynced, dynamicStyles.lastSynced]}>
+                Last synced: {lastSynced}
+              </ThemedText>
             )}
           </ThemedView>
         </Pressable>
@@ -104,7 +109,9 @@ export default function SettingsScreen() {
           <ThemedIcon name="chatbox-outline" size={24} />
           <ThemedView>
             <ThemedText>Test Background Task</ThemedText>
-            <ThemedText style={styles.lastSynced}>{status === BackgroundTask.BackgroundTaskStatus.Restricted ? 'Unavailable' : 'Available'}: {isRegistered ? 'Registered' : 'Not registered'}</ThemedText>
+            <ThemedText type="muted" style={styles.lastSynced}>
+              {status === BackgroundTask.BackgroundTaskStatus.Restricted ? 'Unavailable' : 'Available'}: {isRegistered ? 'Registered' : 'Not registered'}
+            </ThemedText>
           </ThemedView>
         </Pressable>
       </ThemedView>
@@ -118,17 +125,27 @@ const styles = StyleSheet.create({
   themeRow: { flexDirection: 'row', gap: 8 },
   themeChip: {
     borderWidth: 1,
-    borderColor: '#9ca3af',
     borderRadius: 16,
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
-  themeChipActive: {
-    borderColor: '#0a7ea4',
-    backgroundColor: '#0a7ea4',
-  },
   themeChipText: { fontSize: 13 },
-  themeChipTextActive: { color: '#ffffff' },
   card: { flexDirection: "row", alignItems: "center", marginVertical: 10, padding: 10, gap: 10 },
-  lastSynced: { fontSize: 12, color: "gray" },
+  lastSynced: { fontSize: 12 },
 });
+
+type AppColors = ReturnType<typeof useAppColors>;
+
+const createDynamicStyles = (colors: AppColors) =>
+  StyleSheet.create({
+    themeChip: {
+      borderColor: colors.border,
+    },
+    themeChipActive: {
+      borderColor: colors.tint,
+      backgroundColor: colors.tint,
+    },
+    themeChipTextActive: {
+      color: colors.background,
+    },
+  });
