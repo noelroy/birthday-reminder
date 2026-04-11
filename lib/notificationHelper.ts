@@ -5,16 +5,23 @@ import { Platform } from "react-native";
 const BIRTHDAY_NOTIFICATION_TYPE = "birthday-reminder";
 const DEFAULT_ROLLING_DAYS = 30;
 
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-      shouldShowBanner: true,
-      shouldShowList: true,
-    }),
-  });
+Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+                shouldPlaySound: false,
+                shouldSetBadge: true,
+                shouldShowBanner: true,
+                shouldShowList: true,
+        }),
+});
 
-export async function setupNotifications() {
+export type SetupNotificationsResult = {
+        granted: boolean;
+        status: Notifications.PermissionStatus;
+        channelConfigured: boolean;
+        isPhysicalDevice: boolean;
+};
+
+export async function setupNotifications(): Promise<SetupNotificationsResult> {
     let channelConfigured = false;
 
     if (Platform.OS === "android") {
@@ -66,17 +73,14 @@ export async function setupNotifications() {
 export async function sendBirthdayNotification(names: string[]) {
     if (names.length === 0) return;
 
-    const message =
-        names.length === 1
-            ? `${names[0]} has a birthday today 🎉`
-            : `Birthdays today: ${names.join(", ")} 🎂`;
+    const message = buildBirthdayMessage(names);
 
     await Notifications.scheduleNotificationAsync({
         content: {
             title: "🎂 Birthday Reminder",
             body: message,
             sound: true,
-                        data: { type: BIRTHDAY_NOTIFICATION_TYPE },
+            data: { type: BIRTHDAY_NOTIFICATION_TYPE },
         },
         trigger: null, // send immediately
     });
@@ -98,7 +102,13 @@ const startOfDay = (date: Date) => {
     return normalized;
 };
 
-const dayKey = (date: Date) => startOfDay(date).toISOString().slice(0, 10);
+const dayKey = (date: Date) => {
+    const local = startOfDay(date);
+    const y = local.getFullYear();
+    const m = String(local.getMonth() + 1).padStart(2, "0");
+    const d = String(local.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+};
 
 const buildBirthdayMessage = (names: string[]) =>
     names.length === 1
