@@ -76,7 +76,7 @@ export default function UpcomingScreen() {
   }, []);
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={{ backgroundColor: "transparent" }}>
       <ThemedView style={styles.filtersCard}>
         <ThemedTextInput
           value={searchText}
@@ -97,25 +97,24 @@ export default function UpcomingScreen() {
           ))}
         </ScrollView>
       </ThemedView>
-
-      {filteredUpcoming.length === 0 ? (
-        <ThemedView style={styles.emptyContainer}>
-          <ThemedText style={styles.empty}>No birthdays match your filters 🎉</ThemedText>
-        </ThemedView>
-      ) : (
-        <SectionList
-          sections={sections}
-          keyExtractor={(item) => item.name}
-          renderSectionHeader={({ section }) => <UpcomingSectionHeader title={section.title} />}
-          renderItem={({ item }) => <UpcomingBirthdayCard item={item} />}
-        />
-      )}
+      
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.name}
+        ListEmptyComponent={
+          <ThemedView style={styles.emptyContainer}>
+            <ThemedText style={styles.empty}>No birthdays match your filters 🎉</ThemedText>
+          </ThemedView>
+        }
+        renderSectionHeader={({ section }) => <UpcomingSectionHeader title={section.title} />}
+        renderItem={({ item }) => <UpcomingBirthdayCard item={item} />}
+      />
+      
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
   filtersCard: { paddingHorizontal: 10, paddingTop: 10, paddingBottom: 4, gap: 10 },
   searchInput: {
     borderWidth: 1,
@@ -125,6 +124,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   monthChips: { gap: 8, paddingBottom: 6 },
-  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  empty: { textAlign: "center", marginTop: 30, fontSize: 16 },
+  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center", padding: 16 },
+  empty: { marginBottom: 6},
 });

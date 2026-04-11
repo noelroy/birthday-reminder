@@ -1,4 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
+import { useAppColors } from "@/hooks/useAppColors";
 import { Pressable, StyleSheet } from "react-native";
 
 type FilterChipProps = {
@@ -8,12 +9,13 @@ type FilterChipProps = {
 };
 
 export function FilterChip({ label, active, onPress }: FilterChipProps) {
+  const colors = useAppColors();
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.chip, active && styles.chipActive, pressed && styles.chipPressed]}
+      style={({ pressed }) => [styles.chip, {borderColor: colors.border}, active && {backgroundColor: colors.tint}, pressed && styles.chipPressed]}
     >
-      <ThemedText style={[styles.chipText, active && styles.chipTextActive]}>{label}</ThemedText>
+      <ThemedText style={[styles.chipText, active && {color: colors.background}]}>{label}</ThemedText>
     </Pressable>
   );
 }
@@ -24,13 +26,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: "#EEF2F7",
-    marginRight: 8,
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  chipActive: { backgroundColor: "#18488B" },
   chipPressed: { opacity: 0.85 },
-  chipText: { fontSize: 12, color: "#2E3A4D", fontWeight: "600" },
-  chipTextActive: { color: "#FFFFFF" },
+  chipText: { fontSize: 12, fontWeight: "600" },
 });
