@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { registerBackgroundTaskAsync, unregisterBackgroundTaskAsync } from "@/lib/backgroundTaskHelper";
+import { registerBackgroundTaskAsync } from "@/lib/backgroundTaskHelper";
 import { readContacts } from "@/lib/dataHelpers";
 import { scheduleRollingBirthdayNotifications, setupNotifications } from "@/lib/notificationHelper";
 import { Redirect } from "expo-router";
@@ -17,11 +17,6 @@ export default function SignInScreen() {
         await setupNotifications();
         const scheduledCount = await scheduleRollingBirthdayNotifications(contacts, 30);
         console.log(`Scheduled ${scheduledCount} birthday reminder day(s) for next 30 days`);
-        try {
-          await unregisterBackgroundTaskAsync();
-        } catch (error) {
-          console.log("Skipping task unregister:", error);
-        }
         await registerBackgroundTaskAsync();
         if (__DEV__) console.log('Running in dev mode');
         console.log("Initialization complete, navigating to main screen");
