@@ -1,18 +1,25 @@
 import { ThemedIcon } from "@/components/ThemedIcon";
 import { ThemedText } from "@/components/ThemedText";
+import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedView } from "@/components/ThemedView";
 import { useAppColors } from "@/hooks/useAppColors";
 import { getMissingBirthdayContacts } from "@/lib/dataHelpers";
 import { useAppStore } from "@/lib/store";
 import * as Contacts from "expo-contacts";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Alert, FlatList, Pressable, StyleSheet } from "react-native";
 
 export default function MissingBirthdaysScreen() {
   const contacts = useAppStore((s) => s.contacts);
   const colors = useAppColors();
+  const [searchText, setSearchText] = useState("");
 
   const missingBirthdays = useMemo(() => getMissingBirthdayContacts(contacts), [contacts]);
+  const filteredContacts = useMemo(() => {
+    const query = searchText.trim().toLowerCase();
+    if (!query) return missingBirthdays;
+    return missingBirthdays.filter((contact) => (contact.name || "").toLowerCase().includes(query));
+  }, [missingBirthdays, searchText]);
 
   const openContact = async (contactId?: string) => {
     if (!contactId) {
@@ -39,9 +46,23 @@ export default function MissingBirthdaysScreen() {
 
   return (
     <FlatList
-      data={missingBirthdays}
+      data={filteredContacts}
       keyExtractor={(item) => item.id || item.name || Math.random().toString()}
       contentContainerStyle={styles.listContent}
+      ListHeaderComponent={
+        <ThemedTextInput
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholder="Search missing contacts"
+          style={styles.searchInput}
+        />
+      }
+      ListEmptyComponent={
+        <ThemedView style={styles.emptyContainer}>
+          <ThemedText style={styles.emptyTitle}>No contacts found</ThemedText>
+          <ThemedText type="muted">Try another search term.</ThemedText>
+        </ThemedView>
+      }
       renderItem={({ item }) => (
         <ThemedView style={[styles.card, { borderColor: colors.border }]}>
           <ThemedView style={styles.row}>
@@ -69,6 +90,14 @@ export default function MissingBirthdaysScreen() {
 
 const styles = StyleSheet.create({
   listContent: { padding: 10 },
+  searchInput: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    marginBottom: 10,
+  },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center", padding: 16 },
   emptyTitle: { fontSize: 18, marginBottom: 6 },
   card: {
