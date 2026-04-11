@@ -25,7 +25,7 @@ export default function TodayScreen() {
 }
 
 const styles = StyleSheet.create({
-  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center", padding: 16 },
   listContent: { padding: 10 },
-  empty: { textAlign: "center", fontSize: 16, marginTop: 30 },
+  empty: { textAlign: "center", fontSize: 16, marginBottom: 6 },
 });
