@@ -3,21 +3,49 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { getUpcomingBirthdays } from "@/lib/dataHelpers";
 import { useAppStore } from "@/lib/store";
-import { FlatList, Image, StyleSheet } from "react-native";
+import { Image, SectionList, StyleSheet } from "react-native";
 
 
 export default function UpcomingScreen() {
   const contacts = useAppStore((s) => s.contacts);
   const upcoming = getUpcomingBirthdays(contacts);
 
+  const sections = upcoming.reduce<
+    Array<{
+      title: string;
+      data: typeof upcoming;
+    }>
+  >((acc, item) => {
+    const title = item.nextBirthday
+      ? item.nextBirthday.toLocaleDateString("default", {
+          month: "long",
+          year: "numeric",
+        })
+      : "Unknown";
+    const existingSection = acc.find((section) => section.title === title);
+
+    if (existingSection) {
+      existingSection.data.push(item);
+    } else {
+      acc.push({ title, data: [item] });
+    }
+
+    return acc;
+  }, []);
+
   if (upcoming.length === 0) {
     return <ThemedView style={styles.emptyContainer}><ThemedText style={styles.empty}>No upcoming birthdays 🎉</ThemedText></ThemedView>;
   }
 
   return (
-    <FlatList
-      data={upcoming}
+    <SectionList
+      sections={sections}
       keyExtractor={(item) => item.name}
+      renderSectionHeader={({ section }) => (
+        <ThemedView style={styles.sectionHeader}>
+          <ThemedText style={styles.sectionTitle}>{section.title}</ThemedText>
+        </ThemedView>
+      )}
       renderItem={({ item }) => {
         const daysLeft = item.daysLeft;
 
@@ -47,6 +75,8 @@ export default function UpcomingScreen() {
 
 const styles = StyleSheet.create({
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  sectionHeader: { paddingHorizontal: 10, paddingTop: 14, paddingBottom: 6 },
+  sectionTitle: { fontSize: 16, fontWeight: "700" },
   card: { flexDirection: "row", alignItems: "center", marginVertical: 10, padding: 10 },
   avatar: { width: 50, height: 50, borderRadius: 25, marginRight: 15 },
   name: { fontSize: 18, fontWeight: "bold" },

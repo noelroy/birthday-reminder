@@ -199,7 +199,6 @@ Important implications:
 ### User Experience
 
 - Search and filter in Today and Upcoming tabs (by month, by name).
-- Group upcoming birthdays by month sections.
 
 ### Customization
 
