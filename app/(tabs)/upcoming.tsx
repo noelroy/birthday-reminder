@@ -1,14 +1,14 @@
 import { ThemedText } from "@/components/ThemedText";
+import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { ThemedView } from "@/components/ThemedView";
 import { FilterChip } from "@/components/upcoming/FilterChip";
 import { UpcomingBirthdayCard } from "@/components/upcoming/UpcomingBirthdayCard";
 import { UpcomingSectionHeader } from "@/components/upcoming/UpcomingSectionHeader";
 import { UpcomingItem } from "@/components/upcoming/types";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import { getUpcomingBirthdays } from "@/lib/dataHelpers";
 import { useAppStore } from "@/lib/store";
 import { useMemo, useState } from "react";
-import { ScrollView, SectionList, StyleSheet, TextInput } from "react-native";
+import { ScrollView, SectionList, StyleSheet } from "react-native";
 
 type UpcomingSection = {
   title: string;
@@ -17,8 +17,6 @@ type UpcomingSection = {
 
 export default function UpcomingScreen() {
   const contacts = useAppStore((s) => s.contacts);
-  const borderColor = useThemeColor({}, "border");
-  const mutedTextColor = useThemeColor({}, "mutedText");
   const upcoming = getUpcomingBirthdays(contacts);
   const [searchText, setSearchText] = useState("");
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
@@ -80,12 +78,11 @@ export default function UpcomingScreen() {
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.filtersCard}>
-        <TextInput
+        <ThemedTextInput
           value={searchText}
           onChangeText={setSearchText}
           placeholder="Search by name"
-          placeholderTextColor={mutedTextColor}
-          style={[styles.searchInput, { borderColor }]}
+          style={styles.searchInput}
         />
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.monthChips}>
