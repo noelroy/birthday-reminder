@@ -4,6 +4,7 @@ import { FilterChip } from "@/components/upcoming/FilterChip";
 import { UpcomingBirthdayCard } from "@/components/upcoming/UpcomingBirthdayCard";
 import { UpcomingSectionHeader } from "@/components/upcoming/UpcomingSectionHeader";
 import { UpcomingItem } from "@/components/upcoming/types";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { getUpcomingBirthdays } from "@/lib/dataHelpers";
 import { useAppStore } from "@/lib/store";
 import { useMemo, useState } from "react";
@@ -16,6 +17,8 @@ type UpcomingSection = {
 
 export default function UpcomingScreen() {
   const contacts = useAppStore((s) => s.contacts);
+  const borderColor = useThemeColor({}, "border");
+  const mutedTextColor = useThemeColor({}, "mutedText");
   const upcoming = getUpcomingBirthdays(contacts);
   const [searchText, setSearchText] = useState("");
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
@@ -81,8 +84,8 @@ export default function UpcomingScreen() {
           value={searchText}
           onChangeText={setSearchText}
           placeholder="Search by name"
-          placeholderTextColor="#8A8A8A"
-          style={styles.searchInput}
+          placeholderTextColor={mutedTextColor}
+          style={[styles.searchInput, { borderColor }]}
         />
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.monthChips}>
@@ -119,7 +122,6 @@ const styles = StyleSheet.create({
   filtersCard: { paddingHorizontal: 10, paddingTop: 10, paddingBottom: 4, gap: 10 },
   searchInput: {
     borderWidth: 1,
-    borderColor: "#D7DCE3",
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -127,5 +129,5 @@ const styles = StyleSheet.create({
   },
   monthChips: { gap: 8, paddingBottom: 6 },
   emptyContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  empty: { textAlign: "center", marginTop: 30, fontSize: 16, color: "gray" },
+  empty: { textAlign: "center", marginTop: 30, fontSize: 16 },
 });

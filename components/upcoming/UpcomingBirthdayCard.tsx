@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   avatar: { width: 50, height: 50, borderRadius: 25, marginRight: 15 },
   name: { fontSize: 18, fontWeight: "bold" },
   metaRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 2 },
-  birthday: { fontSize: 14, color: "gray" },
+  birthday: { fontSize: 14 },
   badge: {
     paddingHorizontal: 8,
     paddingVertical: 1,
