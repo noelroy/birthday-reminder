@@ -196,10 +196,6 @@ Important implications:
 - Missed reminder recovery: if the app was off at trigger time, show a "missed birthdays today" notification on next launch.
 - Add a notification health status card in [app/(tabs)/settings.tsx](app/(tabs)/settings.tsx) with permissions, scheduled count, last sync, and task status.
 
-### User Experience
-
-- Search and filter in Today and Upcoming tabs (by month, by name).
-
 ### Customization
 
 - Reminder time picker (for example, 8:00 AM local time).
