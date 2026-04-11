@@ -93,7 +93,7 @@ export default function SettingsScreen() {
           <ThemedView>
             <ThemedText>Refresh contacts</ThemedText>
             {lastSynced && (
-              <ThemedText style={[styles.lastSynced, dynamicStyles.lastSynced]}>
+              <ThemedText type="muted" style={styles.lastSynced}>
                 Last synced: {lastSynced}
               </ThemedText>
             )}
