@@ -106,7 +106,12 @@ export async function getContacts(): Promise<Contacts.Contact[]> {
   try {
     console.log("Fetching contacts...");
     const { data } =  await Contacts.getContactsAsync({
-      fields: [Contacts.Fields.Name, Contacts.Fields.Birthday, Contacts.Fields.Image],
+      fields: [
+        Contacts.Fields.Name,
+        Contacts.Fields.Birthday,
+        Contacts.Fields.Image,
+        Contacts.Fields.PhoneNumbers,
+      ],
     });
     const now = new Date();
       const formatted = now.toLocaleString();
