@@ -42,6 +42,15 @@ export default function MainLayout() {
         }}
       />
       <Tabs.Screen
+        name="missing-birthdays"
+        options={{
+          title: "Missing",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="alert-circle-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: "Debug",

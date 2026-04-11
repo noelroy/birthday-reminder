@@ -34,6 +34,15 @@ export const getTodaysBirthdays = (contacts: Contacts.Contact[]): Contacts.Conta
   return contacts.filter(isTodayBirthday);
 };
 
+/**
+ * Get contacts with missing birthday details
+ */
+export const getMissingBirthdayContacts = (contacts: Contacts.Contact[]): Contacts.Contact[] => {
+  return contacts
+    .filter((c) => !c.birthday)
+    .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+};
+
 type BirthdayWithNext = Contacts.Contact & {
   nextBirthday?: Date;
   daysLeft?: number;
