@@ -57,7 +57,6 @@ export default function SettingsScreen() {
 
   return (
       <ThemedView style={styles.container}>
-        <ThemedText type="subtitle">Debug Tools</ThemedText>
         <Pressable style={styles.card} onPress={refreshContacts}>
           <ThemedIcon name="refresh" size={24} />
           <ThemedView>
