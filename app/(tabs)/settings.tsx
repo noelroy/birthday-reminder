@@ -4,7 +4,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { TASK_NAME as BACKGROUND_TASK_IDENTIFIER } from "@/lib/backgroundTaskHelper";
 import { getContacts } from "@/lib/dataHelpers";
 import { sendBirthdayNotification } from "@/lib/notificationHelper";
-import { useAppStore } from "@/lib/store";
+import { ThemePreference, useAppStore } from "@/lib/store";
 import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from "expo-task-manager";
 import { useEffect, useState } from "react";
@@ -12,6 +12,8 @@ import { Pressable, StyleSheet, ToastAndroid } from "react-native";
 
 export default function SettingsScreen() {
   const lastSynced = useAppStore((s) => s.lastSynced);
+  const themePreference = useAppStore((s) => s.themePreference);
+  const setThemePreference = useAppStore((s) => s.setThemePreference);
 
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [status, setStatus] = useState<BackgroundTask.BackgroundTaskStatus | null>(null);
@@ -55,8 +57,34 @@ export default function SettingsScreen() {
     ToastAndroid.show('Background task triggered!', ToastAndroid.SHORT);
   };
 
+  const themeOptions: Array<{ label: string; value: ThemePreference }> = [
+    { label: 'System', value: 'system' },
+    { label: 'Light', value: 'light' },
+    { label: 'Dark', value: 'dark' },
+  ];
+
   return (
       <ThemedView style={styles.container}>
+        <ThemedView style={styles.themeSection}>
+          <ThemedText type="defaultSemiBold">Color Scheme</ThemedText>
+          <ThemedView style={styles.themeRow}>
+            {themeOptions.map((option) => {
+              const isActive = themePreference === option.value;
+              return (
+                <Pressable
+                  key={option.value}
+                  style={[styles.themeChip, isActive && styles.themeChipActive]}
+                  onPress={() => setThemePreference(option.value)}
+                >
+                  <ThemedText style={[styles.themeChipText, isActive && styles.themeChipTextActive]}>
+                    {option.label}
+                  </ThemedText>
+                </Pressable>
+              );
+            })}
+          </ThemedView>
+        </ThemedView>
+
         <Pressable style={styles.card} onPress={refreshContacts}>
           <ThemedIcon name="refresh" size={24} />
           <ThemedView>
@@ -86,6 +114,21 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   container: { padding: 10 },
+  themeSection: { marginVertical: 10, padding: 10, gap: 10 },
+  themeRow: { flexDirection: 'row', gap: 8 },
+  themeChip: {
+    borderWidth: 1,
+    borderColor: '#9ca3af',
+    borderRadius: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  themeChipActive: {
+    borderColor: '#0a7ea4',
+    backgroundColor: '#0a7ea4',
+  },
+  themeChipText: { fontSize: 13 },
+  themeChipTextActive: { color: '#ffffff' },
   card: { flexDirection: "row", alignItems: "center", marginVertical: 10, padding: 10, gap: 10 },
   lastSynced: { fontSize: 12, color: "gray" },
 });
