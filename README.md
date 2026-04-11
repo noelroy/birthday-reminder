@@ -200,7 +200,6 @@ Important implications:
 
 - Search and filter in Today and Upcoming tabs (by month, by name).
 - Group upcoming birthdays by month sections.
-- Add days-left badges in [app/(tabs)/upcoming.tsx](app/(tabs)/upcoming.tsx).
 
 ### Customization
 

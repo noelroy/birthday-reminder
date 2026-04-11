@@ -36,6 +36,7 @@ export const getTodaysBirthdays = (contacts: Contacts.Contact[]): Contacts.Conta
 
 type BirthdayWithNext = Contacts.Contact & {
   nextBirthday?: Date;
+  daysLeft?: number;
 };
 
 /**
@@ -43,11 +44,15 @@ type BirthdayWithNext = Contacts.Contact & {
  */
 export const getUpcomingBirthdays = (contacts: Contacts.Contact[]): BirthdayWithNext[] => {
   const today = new Date();
+  const normalizedToday = new Date(today);
+  normalizedToday.setHours(0, 0, 0, 0);
+  const msPerDay = 24 * 60 * 60 * 1000;
 
   return contacts
     .filter((c) => c.birthday)
     .map((c) => {
-      const { month, day } = c.birthday;
+      const birthday = c.birthday!;
+      const { month, day } = birthday;
       let next = new Date(today.getFullYear(), month, day);
 
       // If this year's birthday already passed, set to next year
@@ -55,7 +60,14 @@ export const getUpcomingBirthdays = (contacts: Contacts.Contact[]): BirthdayWith
         next.setFullYear(today.getFullYear() + 1);
       }
 
-      return { ...c, nextBirthday: next };
+      const normalizedNext = new Date(next);
+      normalizedNext.setHours(0, 0, 0, 0);
+      const daysLeft = Math.max(
+        0,
+        Math.ceil((normalizedNext.getTime() - normalizedToday.getTime()) / msPerDay)
+      );
+
+      return { ...c, nextBirthday: next, daysLeft };
     })
     .sort(
       (a, b) =>
