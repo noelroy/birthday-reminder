@@ -3,6 +3,7 @@ import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
 const BIRTHDAY_NOTIFICATION_TYPE = "birthday-reminder";
+const BIRTHDAY_NOTIFICATION_CHANNEL_ID = "birthdays";
 const DEFAULT_ROLLING_DAYS = 30;
 
 Notifications.setNotificationHandler({
@@ -25,7 +26,7 @@ export async function setupNotifications(): Promise<SetupNotificationsResult> {
     let channelConfigured = false;
 
     if (Platform.OS === "android") {
-        await Notifications.setNotificationChannelAsync("birthdays", {
+        await Notifications.setNotificationChannelAsync(BIRTHDAY_NOTIFICATION_CHANNEL_ID, {
             name: "Birthdays",
             importance: Notifications.AndroidImportance.HIGH,
             sound: null,
@@ -86,6 +87,7 @@ export async function testBirthdayNotification(names: string[]) {
             title: "🎂 Birthday Reminder",
             body: message,
             sound: false,
+            ...(Platform.OS === "android" ? { channelId: BIRTHDAY_NOTIFICATION_CHANNEL_ID } : {}),
             data: { type: BIRTHDAY_NOTIFICATION_TYPE },
         },
         trigger: null, // send immediately
@@ -199,6 +201,7 @@ export async function scheduleRollingBirthdayNotifications(
                 title: "🎂 Birthday Reminder",
                 body: buildBirthdayMessage(names),
                 sound: true,
+                ...(Platform.OS === "android" ? { channelId: BIRTHDAY_NOTIFICATION_CHANNEL_ID } : {}),
                 data: {
                     type: BIRTHDAY_NOTIFICATION_TYPE,
                     key: dayKey(date),
