@@ -70,8 +70,14 @@ export async function setupNotifications(): Promise<SetupNotificationsResult> {
     }
 }
 
-export async function sendBirthdayNotification(names: string[]) {
+export async function testBirthdayNotification(names: string[]) {
     if (names.length === 0) return;
+
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== "granted") {
+        console.warn("Cannot send test notification: notification permission is not granted");
+        return;
+    }
 
     const message = buildBirthdayMessage(names);
 
@@ -79,7 +85,7 @@ export async function sendBirthdayNotification(names: string[]) {
         content: {
             title: "🎂 Birthday Reminder",
             body: message,
-            sound: true,
+            sound: false,
             data: { type: BIRTHDAY_NOTIFICATION_TYPE },
         },
         trigger: null, // send immediately

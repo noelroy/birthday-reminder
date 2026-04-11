@@ -4,7 +4,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { useAppColors } from "@/hooks/useAppColors";
 import { TASK_NAME as BACKGROUND_TASK_IDENTIFIER } from "@/lib/backgroundTaskHelper";
 import { getContacts } from "@/lib/dataHelpers";
-import { getNotificationScheduleStatus, NotificationScheduleStatus, scheduleRollingBirthdayNotifications, sendBirthdayNotification } from "@/lib/notificationHelper";
+import { getNotificationScheduleStatus, NotificationScheduleStatus, scheduleRollingBirthdayNotifications, testBirthdayNotification } from "@/lib/notificationHelper";
 import { ThemePreference, useAppStore } from "@/lib/store";
 import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from "expo-task-manager";
@@ -65,7 +65,7 @@ export default function SettingsScreen() {
 
   const testNotification = async() => {
     try{
-      await sendBirthdayNotification(["Alice", "Bob"]);
+      await testBirthdayNotification(["Alice", "Bob"]);
       ToastAndroid.show('Notification sent!', ToastAndroid.SHORT);
     } catch (error) {
       console.error("Error sending notification:", error);
