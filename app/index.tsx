@@ -14,7 +14,13 @@ export default function SignInScreen() {
     (async () => {
       try {
         const contacts = await readContacts();
-        await setupNotifications();
+        const notificationSetup = await setupNotifications();
+        console.log("Notification setup result:", notificationSetup);
+
+        if (!notificationSetup.granted) {
+          console.warn("Notification permission not granted; scheduled reminders may not deliver.");
+        }
+
         const scheduledCount = await scheduleRollingBirthdayNotifications(contacts, 30);
         console.log(`Scheduled ${scheduledCount} birthday reminder day(s) for next 30 days`);
         await registerBackgroundTaskAsync();

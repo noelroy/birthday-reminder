@@ -15,6 +15,7 @@ const DEFAULT_ROLLING_DAYS = 30;
   });
 
 export async function setupNotifications() {
+    let channelConfigured = false;
 
     if (Platform.OS === "android") {
         await Notifications.setNotificationChannelAsync("birthdays", {
@@ -22,6 +23,7 @@ export async function setupNotifications() {
             importance: Notifications.AndroidImportance.HIGH,
             sound: null,
         });
+        channelConfigured = true;
         console.log("Notification channel set up for Android");
     }
 
@@ -34,12 +36,30 @@ export async function setupNotifications() {
             finalStatus = status;
         }
         if (finalStatus !== 'granted') {
-            alert('Failed to get push token for push notification!');
-            return;
+            console.warn('Notifications permission not granted');
+            return {
+                granted: false,
+                status: finalStatus,
+                channelConfigured,
+                isPhysicalDevice: true,
+            };
         }
 
+        return {
+            granted: true,
+            status: finalStatus,
+            channelConfigured,
+            isPhysicalDevice: true,
+        };
+
     } else {
-        alert('Must use physical device for Push Notifications');
+        console.warn('Must use physical device for Notifications testing');
+        return {
+            granted: false,
+            status: 'denied' as Notifications.PermissionStatus,
+            channelConfigured,
+            isPhysicalDevice: false,
+        };
     }
 }
 
