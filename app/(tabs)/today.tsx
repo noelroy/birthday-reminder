@@ -9,16 +9,17 @@ export default function TodayScreen() {
   const contacts = useAppStore((s) => s.contacts);
   const todays = getTodaysBirthdays(contacts);
 
-  if (todays.length === 0) {
-    return <ThemedView style={styles.emptyContainer}><ThemedText style={styles.empty}>No birthdays today 🎉</ThemedText></ThemedView>;
-  }
-
   return (
     <FlatList
       data={todays}
       keyExtractor={(item) => item.name}
       contentContainerStyle={styles.listContent}
       renderItem={({ item }) => <TodayBirthdayCard item={item} />}
+      ListEmptyComponent={
+        <ThemedView style={styles.emptyContainer}>
+          <ThemedText style={styles.empty}>No birthdays today 🎉</ThemedText>
+        </ThemedView>
+      }
     />
   );
 }
